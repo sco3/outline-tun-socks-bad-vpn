@@ -1,0 +1,1 @@
+ss-local -c outline.json  -f /var/run/ss-local.pid

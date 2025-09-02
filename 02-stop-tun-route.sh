@@ -1,0 +1,1 @@
+sudo ip r d default via 10.0.0.2

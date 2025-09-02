@@ -1,0 +1,8 @@
+{
+    "server":"35.***.***.***",
+    "server_port":8081,
+    "local_address":"127.0.0.1",
+    "local_port":1080,
+    "password":"OaSK****",
+    "method":"chacha20-ietf-poly1305"
+}
