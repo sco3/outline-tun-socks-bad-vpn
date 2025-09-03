@@ -1,0 +1,10 @@
+[Unit]
+Description=badvpn-tun2socks service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/sudo /usr/bin/badvpn-tun2socks --tundev tun0 --netif-ipaddr 10.0.0.2 --netif-netmask 255.255.255.0 --socks-server-addr 127.0.0.1:1080
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

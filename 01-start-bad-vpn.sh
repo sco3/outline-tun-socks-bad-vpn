@@ -1,10 +1,20 @@
+
+set -x 
+
 sudo ip tuntap add dev tun0 mode tun user dz
 sudo ip a add 10.0.0.1/24 dev tun0
 sudo ip link set dev tun0 up
 
 
-tmux new-session -d -s badvpn sudo badvpn-tun2socks --tundev tun0 --netif-ipaddr 10.0.0.2 --netif-netmask 255.255.255.0 --socks-server-addr 127.0.0.1:1080 
+
+#tmux new-session -d -s badvpn sudo badvpn-tun2socks --tundev tun0 --netif-ipaddr 10.0.0.2 --netif-netmask 255.255.255.0 --socks-server-addr 127.0.0.1:1080 
+sudo cp badvpn.service /etc/systemd/system/badvpn.service
+sudo systemctl daemon-reload
+sudo systemctl start badvpn.service
 
 sudo ip r a 35.195.20.190 via 192.168.1.1
 
 sudo ip r a default via 10.0.0.2 metric 10
+
+
+echo $(curl ifconfig.me)
