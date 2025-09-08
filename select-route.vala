@@ -5,13 +5,27 @@ using Gtk;
 using GLib;
 using AppIndicator;
 
-// Функция для проверки существования маршрута
 public bool route_exists() {
     int exit_status;
     try {
-        Process.spawn_sync(null, new string[] {"sh", "-c", "ip r | grep -q 'default via 10.0.0.2'"}, null, SpawnFlags.SEARCH_PATH, null, null, null, out exit_status);
+        Process.spawn_sync(
+        null, new string[] {"sh", "-c", "ip r | grep -q 'default via 10.0.0.2'"},
+        null, SpawnFlags.SEARCH_PATH, null, null, null, out exit_status
+        );
     } catch (SpawnError e) {
-        // If the command fails to spawn, assume route doesn't exist for our purposes.
+        return false;
+    }
+    return exit_status == 0;
+}
+
+public bool proxy_route_exists() {
+    int exit_status;
+    try {
+        Process.spawn_sync(
+        null, new string[] {"sh", "-c", "ip r | grep -q '35.195.20.190 via 192.168.1.1'"},
+        null, SpawnFlags.SEARCH_PATH, null, null, null, out exit_status
+        );
+    } catch (SpawnError e) {
         return false;
     }
     return exit_status == 0;
@@ -33,6 +47,11 @@ public class Applet : Object {
         start_item.activate.connect(() => {
             try {
                 Process.spawn_command_line_async("sudo ip r a default via 10.0.0.2 metric 10");
+            } catch (SpawnError e) {
+                warning("Error starting tunnel: %s", e.message);
+            }
+            try {
+                Process.spawn_command_line_async("sudo ip r a 35.195.20.190 via 192.168.1.1");
             } catch (SpawnError e) {
                 warning("Error starting tunnel: %s", e.message);
             }
@@ -69,7 +88,7 @@ public class Applet : Object {
     }
 
     private void update_status() {
-        bool is_active = route_exists();
+        bool is_active = route_exists() && proxy_route_exists();
         GLib.debug("Updating status. Route exists: %s", is_active.to_string());
 
         if (is_active) {
